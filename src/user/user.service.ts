@@ -11,9 +11,9 @@ export class UserService {
 
     constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    async signUp(id: number, email: string, password: string) {
+    async signUp(userID: number, email: string, password: string) {
         // User is created in the data base
-        const user = await this.userModel.create({id, email, password});
+        const user = await this.userModel.create({userID, email, password});
 
         // Password is hashed using a randomly generated salt
         const salt = randomBytes(8).toString('hex');
@@ -21,12 +21,13 @@ export class UserService {
 
         // Password is stored in its hashed state with the salt user to hash it
         password = salt + '.' + hash.toString('hex');
+        user.password = password;
 
         return user.save();
     }
 
     async signIn(email: string, password: string) {
-        const user = await this.userModel.findOne({email});
+        const user = await this.userModel.findOne({email: email});
         if (!user) {
             return new NotFoundException("User not found.");
         }
