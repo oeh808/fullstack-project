@@ -20,7 +20,7 @@ export class Task {
     time : Date;
 
     @Prop({ required: [true, "Task must have associated User"], trim: true })
-    user : string;
+    userID : number;
 }
 
 export type taskDocument = HydratedDocument<Task>;
