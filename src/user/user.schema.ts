@@ -9,8 +9,7 @@ export class User {
     @Prop({ required: [true, "Email required."], unique: true, trim: true  })
     email: string;
 
-    @Prop({ required: [true, "Password required."], trim: true, select: false })
-    // Password will not be returned in api requests              ^^^    ^^^
+    @Prop({ required: [true, "Password required."], trim: true})
     password: string;
 }
 
