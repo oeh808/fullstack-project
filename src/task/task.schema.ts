@@ -5,18 +5,19 @@ import { TaskStatus } from '../constants/enums';
 
 @Schema()
 export class Task {
-    @Prop({ required: [true, ""], unique: true, trim: true })
+    @Prop({ required: [true, "Task must have an id"], unique: true, trim: true })
     id : number;
 
-    @Prop({ required: [true, ""], unique: true, trim: true })
+    @Prop({ required: [true, "Task must have a title"], unique: true, trim: true })
     title : string;
 
     @Prop({ type: String, enum: TaskStatus, default: TaskStatus.OPEN })
     //@IsEnum(TaskStatus)
     status : TaskStatus;
 
+    // Time spent on the task
     @Prop({ trim: true })
-    time : string;
+    time : Date;
 
     @Prop({ required: [true, "Task must have associated User"], trim: true })
     user : string;
