@@ -31,7 +31,7 @@ export class UserService {
     }
 
     async signIn(email: string, password: string) {
-        const user = await this.userModel.findOne({email: email});
+        const user = await this.userModel.findOne({email: email}).select('password');
         if (!user) {
             return new NotFoundException("Incorrect email or password.");
         }
