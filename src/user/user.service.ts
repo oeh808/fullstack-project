@@ -5,11 +5,12 @@ const scrypt = promisify(_scrypt);
 import { User } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
 
-    constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+    constructor(private jwtService: JwtService, @InjectModel(User.name) private userModel: Model<User>) {}
 
     async signUp(userID: number, email: string, password: string) {
         // User is created in the data base
@@ -23,13 +24,16 @@ export class UserService {
         password = salt + '.' + hash.toString('hex');
         user.password = password;
 
-        return user.save();
+        const token = await this.jwtService.signAsync({id: user.userID});
+
+        user.save();
+        return token;
     }
 
     async signIn(email: string, password: string) {
         const user = await this.userModel.findOne({email: email});
         if (!user) {
-            return new NotFoundException("User not found.");
+            return new NotFoundException("Incorrect email or password.");
         }
         
         // Password is split to seperate the hash and the salt
@@ -39,8 +43,23 @@ export class UserService {
         const hash = (await scrypt(password, salt, 32)) as Buffer;
 
         if (hash.toString('hex') !== storedHash){
-            throw new BadRequestException("Incorrect Password")
+            throw new BadRequestException("Incorrect email or password.")
         }
+
+        const token = await this.jwtService.signAsync({id: user.userID});
+        return token;
+    }
+
+    async whoAmI(token: string) {
+        const id = this.extractId(token);
+        const user = await this.userModel.findOne({userID: id});
         return user;
+    }
+
+    // { id: 3, iat: 1696189242, exp: 1696275642 }
+    extractId(token: string) {
+        const temp = atob(token.split('.')[1]);
+        const id = temp.split(',')[0].slice(-1);
+        return id;
     }
 }
