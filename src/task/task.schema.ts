@@ -8,16 +8,16 @@ export class Task {
     @Prop({ required: [true, "Task must have an id"], unique: true, trim: true })
     id : number;
 
-    @Prop({ required: [true, "Task must have a title"], unique: true, trim: true })
+    @Prop({ required: [true, "Task must have a title"], trim: true })
     title : string;
 
     @Prop({ type: String, enum: TaskStatus, default: TaskStatus.OPEN })
-    //@IsEnum(TaskStatus)
+    //@IsEnum(TaskStatus) 
     status : TaskStatus;
 
     // Time spent on the task
-    @Prop({ trim: true })
-    time : Date;
+    @Prop({ trim: true, default: 0 })
+    time : number;
 
     @Prop({ required: [true, "Task must have associated User"], trim: true })
     userID : number;
