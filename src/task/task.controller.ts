@@ -35,8 +35,8 @@ export class TaskController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete()
-    deleteTask() {
-
+    @Delete('/:id')
+    deleteTask(@Param('id') id: string, @Headers('authorization') header: string) {
+        return this.taskService.delete(parseInt(id), header)
     }
 }

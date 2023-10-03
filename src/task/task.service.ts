@@ -53,6 +53,18 @@ export class TaskService {
         return task;
     }
 
+    async delete(id: number, header: string) {
+        const userId = this.extractId(header);
+        const task = await this.taskModel.findOne({id: id, userID: userId});
+
+        if(!task){
+            throw new UnauthorizedException("You do not have a task with this id.");
+        }
+
+        await this.taskModel.deleteOne({id: id});
+
+        return task;
+    }
 
     extractId(token: string) {
         const temp = atob(token.split('.')[1]);
