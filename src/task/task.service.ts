@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.schema';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { EditTaskDto } from './dtos/edit-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -33,6 +34,23 @@ export class TaskService {
         const tasks = await this.taskModel.find({ "title" : { $regex: title, $options: 'i' }, userID: userId });
 
         return tasks;
+    }
+
+    async update(id: number, dto: EditTaskDto, header: string) {
+        const userId = this.extractId(header);
+        const task = await this.taskModel.findOne({id: id, userID: userId});
+
+        if(!task){
+            throw new UnauthorizedException("You do not have a task with this id.");
+        }
+
+        Object.assign(task,dto);
+
+        await this.taskModel.updateOne({id: id}, task);
+
+        
+
+        return task;
     }
 
 

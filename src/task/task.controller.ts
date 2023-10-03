@@ -3,6 +3,7 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
 import { SearchTaskDto } from './dtos/search-task.dto';
+import { EditTaskDto } from './dtos/edit-task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -28,9 +29,9 @@ export class TaskController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch()
-    editTask() {
-
+    @Patch('/:id')
+    editTask(@Param('id') id: string, @Body() body: EditTaskDto, @Headers('authorization') header: string) {
+        return this.taskService.update(parseInt(id), body, header);
     }
 
     @UseGuards(JwtAuthGuard)

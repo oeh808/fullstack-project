@@ -12,7 +12,6 @@ export class Task {
     title : string;
 
     @Prop({ type: String, enum: TaskStatus, default: TaskStatus.OPEN })
-    //@IsEnum(TaskStatus) 
     status : TaskStatus;
 
     // Time spent on the task
