@@ -14,9 +14,15 @@ export class Task {
     @Prop({ type: String, enum: TaskStatus, default: TaskStatus.OPEN })
     status : TaskStatus;
 
-    // Time spent on the task
-    @Prop({ trim: true, default: 0 })
+    // Time spent on the task measured in milliseconds
+    @Prop({ default: Date.now(), select: false })
     time : number;
+
+    @Prop({default: 0})
+    timeSpent: number;
+
+    @Prop({default: false})
+    clockedIn: boolean
 
     @Prop({ required: [true, "Task must have associated User"], trim: true })
     userID : number;

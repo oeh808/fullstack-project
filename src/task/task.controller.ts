@@ -39,4 +39,16 @@ export class TaskController {
     deleteTask(@Param('id') id: string, @Headers('authorization') header: string) {
         return this.taskService.delete(parseInt(id), header)
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/clockin/:id')
+    clockIn(@Param('id') id: string, @Headers('authorization') header: string) {
+        return this.taskService.clockIn(parseInt(id),header);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/clockout/:id')
+    clockOut(@Param('id') id: string, @Headers('authorization') header: string) {
+        return this.taskService.clockOut(parseInt(id),header);
+    }
 }
