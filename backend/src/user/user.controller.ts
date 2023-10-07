@@ -4,7 +4,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './user.schema';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
-@Controller('user')
+@Controller()
 export class UserController {
     constructor(private userService: UserService) {}
 
@@ -23,7 +23,7 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get()
+    @Get('WhoAmI')
     whoAmI (@Headers('authorization') header: string) {
         return this.userService.whoAmI(header.split(' ')[1]);
     }
