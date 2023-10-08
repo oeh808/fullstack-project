@@ -4,12 +4,12 @@ import { Container, Form, Button, InputGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 
-const Tasks = () => {
+const Home = () => {
     return (
         <div className="App">
             <header className="App-header">
             <Container fluid className='w-25'>
-                <h1 className="text-center fixed-top">Tasks Page</h1>
+                <h1 className="text-center fixed-top">Home Page</h1>
                 <InputGroup className="mb-3">
                     
                     <Form.Control
@@ -28,4 +28,4 @@ const Tasks = () => {
     )
 }
 
-export default Tasks;
+export default Home;

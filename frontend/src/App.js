@@ -48,7 +48,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/auth/SignIn";
-import Tasks from "./pages/tasks";
+import Home from "./pages/Home";
 import NoPage from "./pages/Nopage";
 import './App.css';
 
@@ -59,7 +59,7 @@ export default function App() {
         {/* Page the website opens to */}
         <Route path="/">
           <Route index element={<SignIn />} />
-          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/tasks" element={<Home />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
