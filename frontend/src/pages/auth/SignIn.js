@@ -3,7 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { Container, Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const Home = () => {
+// Signin Page
+const SignIn = () => {
     return (
         <div className="App">
             <header className="App-header">
@@ -40,4 +41,4 @@ const Home = () => {
     );
   };
   
-  export default Home;
+  export default SignIn;
