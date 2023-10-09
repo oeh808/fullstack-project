@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import ListGroup from "react-bootstrap/ListGroup";
 
 /* Components to be added:
@@ -9,7 +10,17 @@ import ListGroup from "react-bootstrap/ListGroup";
 function HomePage() {
   return (
     <>
-      <h1 className="fixed-top">Home Page</h1>
+      <Form className="fixed-top">
+        <h1>Home Page</h1>
+        <Row className="align-items-center mx-0">
+          <Col xs={10} className="mx-0">
+            <Form.Control placeholder="Search by Title..." />
+          </Col>
+          <Col className="px-0">
+            <Button>Search</Button>
+          </Col>
+        </Row>
+      </Form>
       <ListGroup>
         <ListGroup.Item>Task 1</ListGroup.Item>
         <ListGroup.Item>Task 2</ListGroup.Item>
