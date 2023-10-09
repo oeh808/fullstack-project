@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Session, Get, Patch, Delete, Param, Query, Headers, UseGuards, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Post, Session, Get, Patch, Delete, Param, Query, Headers, UseGuards, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './user.schema';
@@ -24,7 +24,7 @@ export class UserController {
             const user = await this.userService.signIn(body.email, body.password);
             return user;
         }catch(error){
-            throw new BadRequestException(error.message);
+            throw new UnauthorizedException(error.message);
         }
     }
 

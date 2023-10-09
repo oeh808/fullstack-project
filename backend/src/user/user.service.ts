@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 const scrypt = promisify(_scrypt);
@@ -43,7 +43,7 @@ export class UserService {
         const hash = (await scrypt(password, salt, 32)) as Buffer;
 
         if (hash.toString('hex') !== storedHash){
-            throw new BadRequestException("Incorrect email or password.")
+            throw new UnauthorizedException("Incorrect email or password.")
         }
 
         const token = await this.jwtService.signAsync({id: user.userID});
