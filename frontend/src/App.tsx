@@ -1,6 +1,7 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import SignIn from "./components/SignIn";
+import RoutesHandler from "./routes";
 
 function App() {
   // let items = ["Apple", "Mango", "Strawberry"];
@@ -17,7 +18,7 @@ function App() {
         onSelectItem={handleSelectedItem}
       /> */}
       <header className="App-header">
-        <SignIn></SignIn>
+        <RoutesHandler></RoutesHandler>
       </header>
     </div>
   );

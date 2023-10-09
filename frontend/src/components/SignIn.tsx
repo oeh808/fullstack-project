@@ -1,8 +1,10 @@
 import React from "react";
 import { Button, Form } from "react-bootstrap";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
+  let navigate = useNavigate();
   return (
     <div>
       <h1>Welcome to Task Manager</h1>
@@ -19,7 +21,13 @@ const SignIn = () => {
           };
 
           const { data } = await axios.post("http://[::1]:3000/signin", form);
-          console.log(data);
+          if (data.status === 404) {
+            console.log(data.response);
+          } else {
+            localStorage.setItem("token", data);
+            console.log(localStorage.getItem("token"));
+            navigate("/tasks");
+          }
         }}
       >
         <Form.Group className="mb-3" controlId="email">
