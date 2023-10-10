@@ -31,6 +31,9 @@ export class TaskService {
 
     async find (title: string, header: string) {
         const userId = this.extractId(header);
+        if (!title){
+            title = "";
+        }
         const tasks = await this.taskModel.find({ "title" : { $regex: title, $options: 'i' }, userID: userId });
 
         return tasks;
