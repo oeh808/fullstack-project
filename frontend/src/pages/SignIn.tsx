@@ -7,7 +7,7 @@ const SignIn = () => {
   let navigate = useNavigate();
   return (
     <div>
-      <h1>Welcome to Task Manager</h1>
+      <h1>Welcome to Task Tracker</h1>
       <Form
         onSubmit={async (e: React.SyntheticEvent) => {
           e.preventDefault();
@@ -52,7 +52,7 @@ const SignIn = () => {
           />
         </Form.Group>
         <Button variant="primary" type="submit">
-          Log In
+          Sign In
         </Button>
       </Form>
     </div>
