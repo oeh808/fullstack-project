@@ -11,14 +11,21 @@ import ListGroup from "react-bootstrap/ListGroup";
 function HomePage() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [tasks, setTasks] = useState<string[]>([]);
+  const [title, setTitle] = useState<string>("");
 
   const getTasks = async () => {
-    // console.log(localStorage.getItem("token"));
-    const { data } = await axios.get("http://[::1]:3000/task", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    console.log(localStorage.getItem("token"));
+    console.log(title);
+    const { data } = await axios.post(
+      "http://[::1]:3000/task/search",
+      { title: title },
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
+    console.log(data);
 
     let newTasks: string[] = [];
 
@@ -37,10 +44,15 @@ function HomePage() {
         <h1>Home Page</h1>
         <Row className="align-items-center mx-0">
           <Col xs={10} className="mx-0">
-            <Form.Control placeholder="Search by Title..." />
+            <Form.Control
+              placeholder="Search by Title..."
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </Col>
           <Col className="px-0">
-            <Button>Search</Button>
+            <Button type="button" onClick={getTasks}>
+              Search
+            </Button>
           </Col>
         </Row>
       </Form>

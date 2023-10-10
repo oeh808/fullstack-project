@@ -5,31 +5,31 @@ import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   let navigate = useNavigate();
+  const handleSubmit = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      email: { value: string };
+      password: { value: string };
+    };
+    const form = {
+      email: target.email.value,
+      password: target.password.value,
+    };
+
+    const { data } = await axios.post("http://[::1]:3000/signin", form);
+    if (data.status === 404) {
+      console.error(data.response);
+    } else {
+      localStorage.setItem("token", data);
+      console.log(localStorage.getItem("token"));
+      navigate("/tasks");
+    }
+  };
+
   return (
     <div>
       <h1>Welcome to Task Tracker</h1>
-      <Form
-        onSubmit={async (e: React.SyntheticEvent) => {
-          e.preventDefault();
-          const target = e.target as typeof e.target & {
-            email: { value: string };
-            password: { value: string };
-          };
-          const form = {
-            email: target.email.value,
-            password: target.password.value,
-          };
-
-          const { data } = await axios.post("http://[::1]:3000/signin", form);
-          if (data.status === 404) {
-            console.log(data.response);
-          } else {
-            localStorage.setItem("token", data);
-            console.log(localStorage.getItem("token"));
-            navigate("/tasks");
-          }
-        }}
-      >
+      <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email address</Form.Label>
           <Form.Control
