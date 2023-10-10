@@ -34,7 +34,7 @@ export class TaskService {
         if (!title){
             title = "";
         }
-        const tasks = await this.taskModel.find({ "title" : { $regex: title, $options: 'i' }, userID: userId });
+        const tasks = await this.taskModel.find({ "title" : { $regex: title, $options: 'i' }, userID: userId }).sort({id: 'ascending'});
 
         return tasks;
     }
