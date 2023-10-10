@@ -1,6 +1,5 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
-import SignIn from "./pages/SignIn";
 import RoutesHandler from "./routes";
 
 function App() {
