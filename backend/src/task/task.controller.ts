@@ -25,7 +25,6 @@ export class TaskController {
     @Post('/search')
     // Search by title
     getAllTasks(@Body() body: SearchTaskDto, @Headers('authorization') header: string) {
-        console.log(body);
         return this.taskService.find(body.title, header);
     }
 
