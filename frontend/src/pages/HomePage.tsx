@@ -10,7 +10,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 */
 function HomePage() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<string[][]>([]);
   const [title, setTitle] = useState<string>("");
 
   const getTasks = async () => {
@@ -27,9 +27,11 @@ function HomePage() {
     );
     console.log(data);
 
-    let newTasks: string[] = [];
+    let newTasks: string[][] = [];
 
-    data.forEach((task: { title: string }) => newTasks.push(task.title));
+    data.forEach((task: { id: string; title: string }) =>
+      newTasks.push([task.id, task.title])
+    );
     setTasks(newTasks);
   };
 
@@ -66,13 +68,13 @@ function HomePage() {
                 ? "list-group-item active"
                 : "list-group-item"
             }
-            key={task}
+            key={task[0]}
             onClick={() => {
               setSelectedIndex(index);
               // Implement a way to open up the task in an overlay
             }}
           >
-            {task}
+            {task[1]}
           </ListGroup.Item>
         ))}
       </ListGroup>
