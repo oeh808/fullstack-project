@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionHeader,
@@ -27,8 +27,11 @@ interface Task {
 function HomePage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
-  const [openCreate, setOpenCreate] = useState(false);
-  const [clockedIn, setClockedIn] = useState(false);
+  const [openCreate, setOpenCreate] = useState<boolean>(false);
+  const [clockedIn, setClockedIn] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(0);
+  const [timeStart, setTimeStart] = useState<number>(0);
+  var interval: NodeJS.Timeout;
 
   // Handles searcing for tasks
   const getTasks = async () => {
@@ -58,13 +61,13 @@ function HomePage() {
           id: task.id,
           title: task.title,
           status: task.status,
-          timeSpent: convertTime(task.timeSpent),
+          timeSpent: presentTime(task.timeSpent),
         })
     );
     setTasks(newTasks);
   };
 
-  // Converts time from milliseconds to HH:MM:SS format
+  // Converts time from milliseconds to hours, minutes and seconds
   const convertTime = (milliseconds: number) => {
     let seconds = Math.floor(milliseconds / 1000);
     let minutes = Math.floor(seconds / 60);
@@ -73,6 +76,12 @@ function HomePage() {
     seconds = seconds % 60;
     minutes = minutes % 60;
 
+    return { hours, minutes, seconds };
+  };
+
+  // Presents time in string format of HH:MM:SS
+  const presentTime = (milliseconds: number) => {
+    const { hours, minutes, seconds } = convertTime(milliseconds);
     return (
       hours.toString().padStart(2, "0") +
       ":" +
@@ -130,12 +139,17 @@ function HomePage() {
   };
 
   // Handles clocking in and out
-  const handleClockIn = async (e: React.SyntheticEvent, id: string) => {
+  const handleClockIn = async (
+    e: React.SyntheticEvent,
+    id: string,
+    time: string
+  ) => {
     e.preventDefault();
+    console.log(`http://[::1]:3000/task/${clockedIn ? "clockOut" : "clockin"}`);
 
     const { data } = await axios.patch(
-      `http://[::1]:3000/task/${clockedIn ? "clockin" : "clockOut"}/${id}`,
-      {},
+      `http://[::1]:3000/task/${clockedIn ? "clockOut" : "clockIn"}/${id}`,
+      { time: time },
       {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -146,6 +160,20 @@ function HomePage() {
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
     } else {
+      if (clockedIn) {
+        // About to clock  out
+        setTimer(0);
+        setTimeStart(0);
+        clearInterval(interval);
+        window.location.reload();
+      } else {
+        // About to clock in
+        setTimeStart(Date.now());
+        console.log("Clocking in!");
+        interval = setInterval(() => {
+          setTimer((timer) => timer + 1000);
+        }, 1000);
+      }
       setClockedIn(!clockedIn);
     }
   };
@@ -204,11 +232,12 @@ function HomePage() {
                   className="btn-space"
                   style={{ width: 100, marginLeft: 188 }}
                   onClick={async (e) => {
-                    await handleClockIn(e, task.id);
+                    await handleClockIn(e, task.id, timer.toString());
                   }}
                 >
                   {clockedIn ? "Clock Out" : "Clock In"}
                 </Button>
+                {presentTime(timer)}
                 <Button
                   type="button"
                   className="btn-space"
