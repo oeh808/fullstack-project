@@ -95,19 +95,35 @@ function HomePage() {
 
     console.log(form);
 
-    const { data } = await axios
-      .post("http://[::1]:3000/task", form, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
-      .catch();
+    const { data } = await axios.post("http://[::1]:3000/task", form, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    });
 
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
     } else {
       console.log(data);
       // Refresh the page after adding in new task
+      window.location.reload();
+    }
+  };
+
+  // Handles Task Deletion
+  const handleDelete = async (e: React.SyntheticEvent, id: string) => {
+    e.preventDefault();
+
+    const { data } = await axios.delete(`http://[::1]:3000/task/${id}`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    });
+
+    if (data.status === 404 || data.status === 400) {
+      console.error(data.response);
+    } else {
+      // Refresh the page after deleting a task
       window.location.reload();
     }
   };
@@ -180,6 +196,9 @@ function HomePage() {
                   className="btn-space"
                   variant="danger"
                   style={{ width: 100, marginLeft: 188 }}
+                  onClick={async (e) => {
+                    await handleDelete(e, task.id);
+                  }}
                 >
                   Delete
                 </Button>
