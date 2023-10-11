@@ -28,6 +28,7 @@ function HomePage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [clockedIn, setClockedIn] = useState(false);
 
   // Handles searcing for tasks
   const getTasks = async () => {
@@ -128,6 +129,27 @@ function HomePage() {
     }
   };
 
+  // Handles clocking in and out
+  const handleClockIn = async (e: React.SyntheticEvent, id: string) => {
+    e.preventDefault();
+
+    const { data } = await axios.patch(
+      `http://[::1]:3000/task/${clockedIn ? "clockin" : "clockOut"}/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
+
+    if (data.status === 404 || data.status === 400) {
+      console.error(data.response);
+    } else {
+      setClockedIn(!clockedIn);
+    }
+  };
+
   // Runs only on first render (Doesn't do so in dev due to React.strictmode)
   useMemo(() => {
     getTasks().catch(console.error);
@@ -173,7 +195,7 @@ function HomePage() {
                 {task.status}
               </Row>
               <Row className="square border-bottom">
-                <b>Time Spent:</b>
+                <b>Time Spent on Task:</b>
                 {task.timeSpent}
               </Row>
               <Row style={{ paddingTop: 5 }}>
@@ -181,8 +203,11 @@ function HomePage() {
                   type="button"
                   className="btn-space"
                   style={{ width: 100, marginLeft: 188 }}
+                  onClick={async (e) => {
+                    await handleClockIn(e, task.id);
+                  }}
                 >
-                  Clock In
+                  {clockedIn ? "Clock Out" : "Clock In"}
                 </Button>
                 <Button
                   type="button"
