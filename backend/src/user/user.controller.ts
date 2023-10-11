@@ -14,7 +14,7 @@ export class UserController {
             const user = await this.userService.signUp(body.userID, body.email, body.password);
         return user;
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
     }
 
@@ -24,7 +24,7 @@ export class UserController {
             const user = await this.userService.signIn(body.email, body.password);
             return user;
         }catch(error){
-            throw new UnauthorizedException(error.message);
+            return new UnauthorizedException(error.message);
         }
     }
 
@@ -34,7 +34,7 @@ export class UserController {
         try{
             return await this.userService.whoAmI(header.split(' ')[1]);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
         
     }

@@ -15,7 +15,7 @@ export class TaskController {
         try {
             return await this.taskService.create(body, header);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
         
     }
@@ -26,7 +26,7 @@ export class TaskController {
         try {
             return await this.taskService.findOne(parseInt(id), header);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
     }
 
@@ -37,7 +37,7 @@ export class TaskController {
         try {
             return await this.taskService.find(body.title, header);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
         
     }
@@ -48,7 +48,7 @@ export class TaskController {
         try {
             return await this.taskService.update(parseInt(id), body, header);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
         
     }
@@ -59,7 +59,7 @@ export class TaskController {
         try {
             return await this.taskService.delete(parseInt(id), header)
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
         
     }
@@ -70,7 +70,7 @@ export class TaskController {
         try {
             return await this.taskService.clockIn(parseInt(id),header);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
     }
 
@@ -80,7 +80,7 @@ export class TaskController {
         try {
             return await this.taskService.clockOut(parseInt(id),header);
         }catch(error){
-            throw new BadRequestException(error.message);
+            return new BadRequestException(error.message);
         }
         
     }
