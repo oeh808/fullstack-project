@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Session, Get, Patch, Delete, Param, Query, Headers, UseGuards, Put } from '@nestjs/common';
+import { Body, Controller, Post, Session, Get, Patch, Delete, Param, Query, Headers, UseGuards, Put, BadRequestException } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
@@ -11,44 +11,77 @@ export class TaskController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    createTask(@Body() body: CreateTaskDto, @Headers('authorization') header: string) {
-        return this.taskService.create(body, header);
+    async createTask(@Body() body: CreateTaskDto, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.create(body, header);
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
+        
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('/:id')
-    getTask(@Param('id') id: string, @Headers('authorization') header: string) {
-        return this.taskService.findOne(parseInt(id), header);
+    async getTask(@Param('id') id: string, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.findOne(parseInt(id), header);
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('/search')
     // Search by title
-    getAllTasks(@Body() body: SearchTaskDto, @Headers('authorization') header: string) {
-        return this.taskService.find(body.title, header);
+    async getAllTasks(@Body() body: SearchTaskDto, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.find(body.title, header);
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
+        
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch('/:id')
-    editTask(@Param('id') id: string, @Body() body: EditTaskDto, @Headers('authorization') header: string) {
-        return this.taskService.update(parseInt(id), body, header);
+    async editTask(@Param('id') id: string, @Body() body: EditTaskDto, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.update(parseInt(id), body, header);
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
+        
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete('/:id')
-    deleteTask(@Param('id') id: string, @Headers('authorization') header: string) {
-        return this.taskService.delete(parseInt(id), header)
+    async deleteTask(@Param('id') id: string, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.delete(parseInt(id), header)
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
+        
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch('/clockin/:id')
-    clockIn(@Param('id') id: string, @Headers('authorization') header: string) {
-        return this.taskService.clockIn(parseInt(id),header);
+    async clockIn(@Param('id') id: string, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.clockIn(parseInt(id),header);
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch('/clockout/:id')
-    clockOut(@Param('id') id: string, @Headers('authorization') header: string) {
-        return this.taskService.clockOut(parseInt(id),header);
+    async clockOut(@Param('id') id: string, @Headers('authorization') header: string) {
+        try {
+            return await this.taskService.clockOut(parseInt(id),header);
+        }catch(error){
+            throw new BadRequestException(error.message);
+        }
+        
     }
 }
