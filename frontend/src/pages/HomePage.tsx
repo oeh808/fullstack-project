@@ -42,22 +42,33 @@ function HomePage() {
 
   return (
     <>
-      <Form className="fixed-top">
+      {/* <header className="position-absolute align-items top-0 start-5"> */}
+      <Form className="App-header-2">
         <h1>Home Page</h1>
-        <Row className="align-items-center mx-0">
-          <Col xs={10} className="mx-0">
+        <Row>
+          <Col xs={20}>
             <Form.Control
               placeholder="Search by Title..."
               onChange={(e) => setTitle(e.target.value)}
             />
           </Col>
-          <Col className="px-0">
+          <Col>
             <Button type="button" onClick={getTasks}>
               Search
             </Button>
           </Col>
         </Row>
       </Form>
+      {/* CRUD */}
+      <Button type="button" className="btn-space" variant="success">
+        Create
+      </Button>
+      <Button type="button" className="btn-space" variant="info">
+        Update
+      </Button>
+      <Button type="button" className="btn-space" variant="danger">
+        Delete
+      </Button>
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
       <ListGroup>

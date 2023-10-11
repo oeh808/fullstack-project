@@ -12,3 +12,19 @@
     font-size: calc(10px + 2vmin);
     color: white;
 }
+
+
+.App-header-2 {
+    background-color: #282c34;
+    min-height: 15vh;
+    align-items: center, top;
+    justify-content: center, top;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    padding-bottom: 10%;
+}
+
+.btn-space {
+    margin-right: 12px;
+    margin-bottom: 5px;
+}
