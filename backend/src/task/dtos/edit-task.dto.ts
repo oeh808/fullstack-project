@@ -13,7 +13,7 @@ export class EditTaskDto {
 
     @IsNumber()
     @IsOptional()
-    time: number;
+    timeSpent: number;
 
     @IsNumber()
     @IsOptional()
