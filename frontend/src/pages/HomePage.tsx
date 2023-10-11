@@ -6,6 +6,7 @@ import {
   Alert,
   Button,
   Col,
+  Collapse,
   Form,
   Row,
 } from "react-bootstrap";
@@ -26,6 +27,7 @@ interface Task {
 function HomePage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   const getTasks = async () => {
     // console.log(localStorage.getItem("token"));
@@ -61,14 +63,12 @@ function HomePage() {
   };
 
   const convertTime = (milliseconds: number) => {
-    console.log(milliseconds);
     let seconds = Math.floor(milliseconds / 1000);
     let minutes = Math.floor(seconds / 60);
     let hours = Math.floor(minutes / 60);
 
     seconds = seconds % 60;
     minutes = minutes % 60;
-    console.log(hours);
 
     return (
       hours.toString().padStart(2, "0") +
@@ -77,6 +77,35 @@ function HomePage() {
       ":" +
       seconds.toString().padStart(2, "0")
     );
+  };
+
+  const handleCreate = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      formGroupId: { value: string };
+      formGroupTitle: { value: string };
+    };
+    const form = {
+      id: parseInt(target.formGroupId.value),
+      title: target.formGroupTitle.value,
+    };
+
+    console.log(form);
+
+    const { data } = await axios
+      .post("http://[::1]:3000/task", form, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+      .catch();
+
+    if (data.status === 404 || data.status === 400) {
+      console.error(data.response);
+    } else {
+      console.log(data);
+      window.location.reload();
+    }
   };
 
   // Runs only on first render (Doesn't do so in dev due to React.strictmode)
@@ -110,10 +139,6 @@ function HomePage() {
           </Row>
         </Form>
       </header>
-      {/* CRUD */}
-      <Button type="button" className="btn-space" variant="success">
-        Create
-      </Button>
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
       <Accordion flush style={{ width: 500 }}>
@@ -159,6 +184,35 @@ function HomePage() {
           </Accordion.Item>
         ))}
       </Accordion>
+      <Button
+        type="button"
+        className="btn-space"
+        variant="success"
+        style={{ width: 150 }}
+        onClick={() => setOpen(!open)}
+      >
+        Create New Task
+      </Button>
+      <div style={{ width: 500 }}>
+        <Collapse
+          in={open}
+          className="rounded-lg border-top border-bottom border-success"
+        >
+          <Form onSubmit={handleCreate}>
+            <Form.Group className="mb-3" controlId="formGroupId">
+              <Form.Label>Task ID</Form.Label>
+              <Form.Control placeholder="Enter Unique ID" />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupTitle">
+              <Form.Label>Title</Form.Label>
+              <Form.Control placeholder="Enter Title" />
+            </Form.Group>
+            <Button variant="success" type="submit">
+              Create
+            </Button>
+          </Form>
+        </Collapse>
+      </div>
     </>
   );
 }
