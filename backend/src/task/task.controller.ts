@@ -4,6 +4,7 @@ import { CreateTaskDto } from './dtos/create-task.dto';
 import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
 import { SearchTaskDto } from './dtos/search-task.dto';
 import { EditTaskDto } from './dtos/edit-task.dto';
+import { ClockInTaskDto } from './dtos/clockin-task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -76,9 +77,9 @@ export class TaskController {
 
     @UseGuards(JwtAuthGuard)
     @Patch('/clockout/:id')
-    async clockOut(@Param('id') id: string, @Headers('authorization') header: string) {
+    async clockOut(@Param('id') id: string, @Body() body: ClockInTaskDto, @Headers('authorization') header: string) {
         try {
-            return await this.taskService.clockOut(parseInt(id),header);
+            return await this.taskService.clockOut(parseInt(id),parseInt(body.time),header);
         }catch(error){
             return new BadRequestException(error.message);
         }

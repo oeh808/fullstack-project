@@ -85,19 +85,18 @@ export class TaskService {
                 // Continue as normal
         }
 
-        await this.taskModel.updateOne({id: id}, {time: Date.now(), status: TaskStatus.IN_PROGRESS}, {returnDocument: "after"});
+        await this.taskModel.updateOne({id: id}, {status: TaskStatus.IN_PROGRESS}, {returnDocument: "after"});
+        
 
         return "Timer started...";
     }
 
-    async clockOut(id: number, header: string){
+    async clockOut(id: number, time: number, header: string){
         const userId = this.extractId(header);
-        const task = await this.taskModel.findOne({id: id, userID: userId}).select(["id","time", "timeSpent", "clockedIn"]);
+        const task = await this.taskModel.findOne({id: id, userID: userId});
         if(!task){
             throw new UnauthorizedException("You do not have a task with this id.");
         }
-
-        const { time, timeSpent } = task;
 
         switch(task.status) {
             case TaskStatus.OPEN:
@@ -108,10 +107,9 @@ export class TaskService {
                 // Continue as normal
         }
 
-        const diff = Date.now() - time;
-        await this.taskModel.updateOne({id: id}, {time: Date.now(), timeSpent: (timeSpent + diff), status: TaskStatus.OPEN}, {returnDocument: "after"});
 
-        return this.calculateTime(timeSpent + diff);
+        await this.taskModel.updateOne({id: id}, {timeSpent: (task.timeSpent + time), status: TaskStatus.OPEN}, {returnDocument: "after"});
+        return this.calculateTime(task.timeSpent);
     }
 
     extractId(token: string) {
