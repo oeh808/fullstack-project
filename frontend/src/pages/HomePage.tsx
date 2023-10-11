@@ -29,6 +29,7 @@ function HomePage() {
   const [title, setTitle] = useState<string>("");
   const [open, setOpen] = useState(false);
 
+  // Handles searcing for tasks
   const getTasks = async () => {
     // console.log(localStorage.getItem("token"));
     // console.log(title);
@@ -62,6 +63,7 @@ function HomePage() {
     setTasks(newTasks);
   };
 
+  // Converts time from milliseconds to HH:MM:SS format
   const convertTime = (milliseconds: number) => {
     let seconds = Math.floor(milliseconds / 1000);
     let minutes = Math.floor(seconds / 60);
@@ -79,6 +81,7 @@ function HomePage() {
     );
   };
 
+  // Handles Task Creation
   const handleCreate = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const target = e.target as typeof e.target & {
@@ -104,6 +107,7 @@ function HomePage() {
       console.error(data.response);
     } else {
       console.log(data);
+      // Refresh the page after adding in new task
       window.location.reload();
     }
   };
