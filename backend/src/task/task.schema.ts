@@ -21,9 +21,6 @@ export class Task {
     @Prop({default: 0})
     timeSpent: number;
 
-    @Prop({default: false})
-    clockedIn: boolean
-
     @Prop({ required: [true, "Task must have associated User"], trim: true })
     userID : number;
 }

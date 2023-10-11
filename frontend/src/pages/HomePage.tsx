@@ -27,7 +27,7 @@ interface Task {
 function HomePage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
-  const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
 
   // Handles searcing for tasks
   const getTasks = async () => {
@@ -212,13 +212,13 @@ function HomePage() {
         className="btn-space"
         variant="success"
         style={{ width: 150 }}
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpenCreate(!openCreate)}
       >
         Create New Task
       </Button>
       <div style={{ width: 500 }}>
         <Collapse
-          in={open}
+          in={openCreate}
           className="rounded-lg border-top border-bottom border-success"
         >
           <Form onSubmit={handleCreate}>

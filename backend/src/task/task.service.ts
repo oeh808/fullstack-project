@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.schema';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { EditTaskDto } from './dtos/edit-task.dto';
+import { TaskStatus } from 'src/constants/enums';
 
 @Injectable()
 export class TaskService {
@@ -75,12 +76,16 @@ export class TaskService {
             throw new UnauthorizedException("You do not have a task with this id.");
         }
 
-        const {clockedIn} = task;
-        if(clockedIn){
-            throw new BadRequestException("You have already clocked in for this task");
+        switch(task.status) {
+            case TaskStatus.IN_PROGRESS:
+                throw new BadRequestException("You have already clocked in for this task");
+            case TaskStatus.DONE:
+                throw new BadRequestException("You have already finished this task.")
+            default: // Status must be open, therefore the task is not clocked in
+                // Continue as normal
         }
 
-        await this.taskModel.updateOne({id: id}, {clockedIn: true}, {returnDocument: "after"});
+        await this.taskModel.updateOne({id: id}, {time: Date.now(), status: TaskStatus.IN_PROGRESS}, {returnDocument: "after"});
 
         return "Timer started...";
     }
@@ -92,15 +97,19 @@ export class TaskService {
             throw new UnauthorizedException("You do not have a task with this id.");
         }
 
-        const { time, timeSpent, clockedIn } = task;
+        const { time, timeSpent } = task;
 
-        console.log(clockedIn);
-        if(!clockedIn){
-            throw new BadRequestException("You have already clocked out for this task");
+        switch(task.status) {
+            case TaskStatus.OPEN:
+                throw new BadRequestException("You have not clocked in for this task");
+            case TaskStatus.DONE:
+                throw new BadRequestException("You have already finished this task.")
+            default: // Status must be in progress, therefore the task is clocked in
+                // Continue as normal
         }
 
         const diff = Date.now() - time;
-        await this.taskModel.updateOne({id: id}, {time: Date.now(), timeSpent: (timeSpent + diff), clockedIn: false}, {returnDocument: "after"});
+        await this.taskModel.updateOne({id: id}, {time: Date.now(), timeSpent: (timeSpent + diff), status: TaskStatus.OPEN}, {returnDocument: "after"});
 
         return this.calculateTime(timeSpent + diff);
     }
