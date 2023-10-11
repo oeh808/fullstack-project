@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useMemo, useState } from "react";
-import { Alert, Button, Col, Form, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import ListGroup from "react-bootstrap/ListGroup";
 
 /* Components to be added:
@@ -43,22 +43,24 @@ function HomePage() {
   return (
     <>
       {/* <header className="position-absolute align-items top-0 start-5"> */}
-      <Form className="App-header-2">
-        <h1>Home Page</h1>
-        <Row>
-          <Col xs={20}>
-            <Form.Control
-              placeholder="Search by Title..."
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </Col>
-          <Col>
-            <Button type="button" onClick={getTasks}>
-              Search
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      <header className="Home-header">
+        <Form>
+          <h1>Home Page</h1>
+          <Row>
+            <Col xs={20}>
+              <Form.Control
+                placeholder="Search by Title..."
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </Col>
+            <Col>
+              <Button type="button" onClick={getTasks}>
+                Search
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </header>
       {/* CRUD */}
       <Button type="button" className="btn-space" variant="success">
         Create
