@@ -11,18 +11,25 @@ import {
 } from "react-bootstrap";
 import AccordionBody from "react-bootstrap/esm/AccordionBody";
 
+interface Task {
+  id: string;
+  title: string;
+  status: string;
+  timeSpent: string;
+}
+
 /* Components to be added:
   - A search bar
   - A timer
   - A table of tasks
 */
 function HomePage() {
-  const [tasks, setTasks] = useState<string[][]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
 
   const getTasks = async () => {
-    console.log(localStorage.getItem("token"));
-    console.log(title);
+    // console.log(localStorage.getItem("token"));
+    // console.log(title);
     const { data } = await axios.post(
       "http://[::1]:3000/task/search",
       { title: title },
@@ -32,14 +39,44 @@ function HomePage() {
         },
       }
     );
-    console.log(data);
+    // console.log(data);
 
-    let newTasks: string[][] = [];
+    let newTasks: Task[] = [];
 
-    data.forEach((task: { id: string; title: string }) =>
-      newTasks.push([task.id, task.title])
+    data.forEach(
+      (task: {
+        id: string;
+        title: string;
+        status: string;
+        timeSpent: number;
+      }) =>
+        newTasks.push({
+          id: task.id,
+          title: task.title,
+          status: task.status,
+          timeSpent: convertTime(task.timeSpent),
+        })
     );
     setTasks(newTasks);
+  };
+
+  const convertTime = (milliseconds: number) => {
+    console.log(milliseconds);
+    let seconds = Math.floor(milliseconds / 1000);
+    let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+
+    seconds = seconds % 60;
+    minutes = minutes % 60;
+    console.log(hours);
+
+    return (
+      hours.toString().padStart(2, "0") +
+      ":" +
+      minutes.toString().padStart(2, "0") +
+      ":" +
+      seconds.toString().padStart(2, "0")
+    );
   };
 
   // Runs only on first render (Doesn't do so in dev due to React.strictmode)
@@ -61,7 +98,12 @@ function HomePage() {
               />
             </Col>
             <Col>
-              <Button type="button" onClick={getTasks}>
+              <Button
+                type="button"
+                onClick={getTasks}
+                variant="info"
+                style={{ marginRight: 20 }}
+              >
                 Search
               </Button>
             </Col>
@@ -72,19 +114,48 @@ function HomePage() {
       <Button type="button" className="btn-space" variant="success">
         Create
       </Button>
-      <Button type="button" className="btn-space" variant="info">
-        Update
-      </Button>
-      <Button type="button" className="btn-space" variant="danger">
-        Delete
-      </Button>
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
-      <Accordion flush style={{ width: 300 }}>
+      <Accordion flush style={{ width: 500 }}>
         {tasks.map((task) => (
-          <Accordion.Item eventKey={task[0]}>
-            <AccordionHeader>{task[1]}</AccordionHeader>
-            <AccordionBody>Lorem ipsum</AccordionBody>
+          <Accordion.Item eventKey={task.id}>
+            <AccordionHeader>
+              <b>{task.id}</b> : {task.title}
+            </AccordionHeader>
+            <AccordionBody>
+              <Row className="square border-bottom">
+                <b>Status:</b>
+                {task.status}
+              </Row>
+              <Row className="square border-bottom">
+                <b>Time Spent:</b>
+                {task.timeSpent}
+              </Row>
+              <Row style={{ paddingTop: 5 }}>
+                <Button
+                  type="button"
+                  className="btn-space"
+                  style={{ width: 100, marginLeft: 188 }}
+                >
+                  Clock In
+                </Button>
+                <Button
+                  type="button"
+                  className="btn-space"
+                  style={{ width: 100, marginLeft: 188 }}
+                >
+                  Update
+                </Button>
+                <Button
+                  type="button"
+                  className="btn-space"
+                  variant="danger"
+                  style={{ width: 100, marginLeft: 188 }}
+                >
+                  Delete
+                </Button>
+              </Row>
+            </AccordionBody>
           </Accordion.Item>
         ))}
       </Accordion>
