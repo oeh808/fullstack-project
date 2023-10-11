@@ -1,7 +1,15 @@
 import axios from "axios";
 import { useMemo, useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import ListGroup from "react-bootstrap/ListGroup";
+import {
+  Accordion,
+  AccordionHeader,
+  Alert,
+  Button,
+  Col,
+  Form,
+  Row,
+} from "react-bootstrap";
+import AccordionBody from "react-bootstrap/esm/AccordionBody";
 
 /* Components to be added:
   - A search bar
@@ -9,7 +17,6 @@ import ListGroup from "react-bootstrap/ListGroup";
   - A table of tasks
 */
 function HomePage() {
-  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [tasks, setTasks] = useState<string[][]>([]);
   const [title, setTitle] = useState<string>("");
 
@@ -73,7 +80,22 @@ function HomePage() {
       </Button>
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
-      <ListGroup>
+      <Accordion flush style={{ width: 300 }}>
+        {tasks.map((task) => (
+          <Accordion.Item eventKey={task[0]}>
+            <AccordionHeader>{task[1]}</AccordionHeader>
+            <AccordionBody>Lorem ipsum</AccordionBody>
+          </Accordion.Item>
+        ))}
+      </Accordion>
+    </>
+  );
+}
+
+export default HomePage;
+
+{
+  /* <ListGroup>
         {tasks.map((task, index) => (
           <ListGroup.Item
             className={
@@ -90,9 +112,5 @@ function HomePage() {
             {task[1]}
           </ListGroup.Item>
         ))}
-      </ListGroup>
-    </>
-  );
+      </ListGroup> */
 }
-
-export default HomePage;
