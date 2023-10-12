@@ -15,6 +15,10 @@ export class UserService {
     async signUp( email: string, password: string) {
         // UserID is randomly generated
         const userID = await this.generateID();
+
+        if((await this.userModel.find({email: email})).length>0){
+            return new BadRequestException("This email is already registered.");
+        }
         // User is created in the data base
         const user = await this.userModel.create({userID, email, password});
 

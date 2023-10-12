@@ -1,12 +1,11 @@
-import React from "react";
-import { Alert, Button, Form } from "react-bootstrap";
 import axios from "axios";
+import { useState } from "react";
+import { Alert, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-function SignIn() {
+function SignUp() {
   let navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = React.useState("");
-
+  const [errorMessage, setErrorMessage] = useState("");
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const target = e.target as typeof e.target & {
@@ -18,8 +17,8 @@ function SignIn() {
       password: target.password.value,
     };
 
-    const { data } = await axios.post("http://[::1]:3000/signin", form);
-    if (data.status === 404) {
+    const { data } = await axios.post("http://[::1]:3000/signup", form);
+    if (data.status === 400) {
       setErrorMessage(data.response.message);
     } else {
       setErrorMessage("");
@@ -29,16 +28,10 @@ function SignIn() {
     }
   };
 
-  const handleRegister = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-
-    navigate("/signup");
-  };
-
   return (
     <div>
       <h1>Welcome to Task Tracker</h1>
-      <h2>Sign in Page</h2>
+      <h2>Sign up Page</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email address</Form.Label>
@@ -63,11 +56,6 @@ function SignIn() {
         </Form.Group>
         {errorMessage && <Alert variant="danger"> {errorMessage} </Alert>}
         <Button variant="primary" type="submit">
-          Sign In
-        </Button>
-      </Form>
-      <Form onSubmit={handleRegister}>
-        <Button variant="info" type="submit">
           Register
         </Button>
       </Form>
@@ -75,4 +63,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;
