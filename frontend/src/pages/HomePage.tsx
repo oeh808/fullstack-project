@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Accordion,
   AccordionHeader,
@@ -29,6 +29,7 @@ function HomePage() {
   const [title, setTitle] = useState<string>("");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [clockedIn, setClockedIn] = useState<boolean>(false);
+  const [clockedInId, setClockedInId] = useState<string>("-1");
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] =
     useState<ReturnType<typeof setInterval>>();
@@ -64,6 +65,24 @@ function HomePage() {
           timeSpent: presentTime(task.timeSpent),
         })
     );
+    setTasks(newTasks);
+  };
+
+  const getSingleTask = async (id: string) => {
+    const { data } = await axios.get(`http://[::1]:3000/task/${id}`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    });
+
+    const singleTask: Task = data;
+    singleTask.timeSpent = presentTime(parseInt(singleTask.timeSpent));
+    const index = tasks.findIndex((element) => element.id == singleTask.id);
+
+    let newTasks: Task[] = [...tasks];
+
+    newTasks[index] = singleTask;
+
     setTasks(newTasks);
   };
 
@@ -113,8 +132,10 @@ function HomePage() {
       console.error(data.response);
     } else {
       console.log(data);
-      // Refresh the page after adding in new task
-      getTasks();
+      const newTask: Task = data;
+      const newTasks: Task[] = [...tasks];
+      newTasks.push(newTask);
+      setTasks(newTasks);
     }
   };
 
@@ -131,7 +152,6 @@ function HomePage() {
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
     } else {
-      // Refresh the page after deleting a task
       getTasks();
     }
   };
@@ -165,9 +185,8 @@ function HomePage() {
         // About to clock  out
         setTimer(0);
         clearInterval(intervalId);
-        getTasks();
       } else {
-        // About to clock i
+        // About to clock in
         console.log("Clocking in!");
         setIntervalId(
           setInterval(() => {
@@ -176,6 +195,8 @@ function HomePage() {
         );
       }
       setClockedIn(!clockedIn);
+      setClockedInId(id);
+      getSingleTask(id);
     }
   };
 
@@ -210,6 +231,7 @@ function HomePage() {
           </Row>
         </Form>
       </header>
+      <h2>Timer: {presentTime(timer)}</h2>
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
       <Accordion flush style={{ width: 500 }}>
@@ -236,9 +258,10 @@ function HomePage() {
                     await handleClockIn(e, task.id, timer.toString());
                   }}
                 >
-                  {clockedIn ? "Clock Out" : "Clock In"}
+                  {clockedIn && clockedInId == task.id
+                    ? "Clock Out"
+                    : "Clock In"}
                 </Button>
-                {presentTime(timer)}
                 <Button
                   type="button"
                   className="btn-space"
