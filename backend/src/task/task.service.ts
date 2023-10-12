@@ -115,7 +115,7 @@ export class TaskService {
 
     extractId(token: string) {
         const temp = atob(token.split('.')[1]);
-        const id = temp.split(',')[0].slice(-1);
+        const id = temp.split(',')[0].split(':')[1];
         return id;
     }
 
