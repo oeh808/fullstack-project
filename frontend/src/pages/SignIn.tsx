@@ -1,10 +1,12 @@
 import React from "react";
-import { Button, Form } from "react-bootstrap";
+import { Alert, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   let navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = React.useState("");
+
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const target = e.target as typeof e.target & {
@@ -18,8 +20,9 @@ const SignIn = () => {
 
     const { data } = await axios.post("http://[::1]:3000/signin", form);
     if (data.status === 404) {
-      console.error(data.response);
+      setErrorMessage(data.response.message);
     } else {
+      setErrorMessage("");
       localStorage.setItem("token", data);
       console.log(localStorage.getItem("token"));
       navigate("/tasks");
@@ -51,6 +54,7 @@ const SignIn = () => {
             required
           />
         </Form.Group>
+        {errorMessage && <Alert variant="danger"> {errorMessage} </Alert>}
         <Button variant="primary" type="submit">
           Sign In
         </Button>

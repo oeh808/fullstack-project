@@ -43,7 +43,7 @@ export class UserService {
         const hash = (await scrypt(password, salt, 32)) as Buffer;
 
         if (hash.toString('hex') !== storedHash){
-            throw new UnauthorizedException("Incorrect email or password.")
+            return new NotFoundException("Incorrect email or password.")
         }
 
         const token = await this.jwtService.signAsync({id: user.userID});
