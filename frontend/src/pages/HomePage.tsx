@@ -11,6 +11,7 @@ import {
   Row,
 } from "react-bootstrap";
 import AccordionBody from "react-bootstrap/esm/AccordionBody";
+import { useNavigate } from "react-router-dom";
 
 interface Task {
   id: string;
@@ -25,9 +26,11 @@ interface Task {
   - A table of tasks
 */
 function HomePage() {
+  let navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
+  const [openUpdate, setOpenUpdate] = useState<boolean>(false);
   const [clockedIn, setClockedIn] = useState<boolean>(false);
   const [clockedInId, setClockedInId] = useState<string>("-1");
   const [timer, setTimer] = useState<number>(0);
@@ -98,6 +101,16 @@ function HomePage() {
     return { hours, minutes, seconds };
   };
 
+  // Converts time from the HH:MM:SS format to milliseconds
+  const convertTimeToMilliseconds = (time: string) => {
+    const temp = time.split(":");
+    const hours = parseInt(temp[0]);
+    const minutes = parseInt(temp[1]) + hours * 60;
+    const seconds = parseInt(temp[2]) + minutes * 60;
+
+    return seconds * 1000;
+  };
+
   // Presents time in string format of HH:MM:SS
   const presentTime = (milliseconds: number) => {
     const { hours, minutes, seconds } = convertTime(milliseconds);
@@ -156,8 +169,36 @@ function HomePage() {
     }
   };
 
-  // Handle Update
-  const handleUpdate = async (e: React.SyntheticEvent, id: string) => {};
+  // Handle Task Updating
+  const handleUpdate = async (e: React.SyntheticEvent, id: string) => {
+    e.preventDefault();
+
+    const target = e.target as typeof e.target & {
+      formGroupTitle: { value: string };
+      formGroupCompletedTask: { checked: boolean };
+      formGroupTime: { value: string };
+    };
+
+    console.log(target.formGroupCompletedTask.checked);
+
+    const form = {
+      title: target.formGroupTitle.value,
+      status: target.formGroupCompletedTask.checked == true ? "DONE" : "OPEN",
+      timeSpent: convertTimeToMilliseconds(target.formGroupTime.value),
+    };
+
+    const { data } = await axios.patch(`http://[::1]:3000/task/${id}`, form, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    });
+
+    if (data.status === 404 || data.status === 400) {
+      console.error(data.response);
+    } else {
+      getSingleTask(id);
+    }
+  };
 
   // Handles clocking in and out
   const handleClockIn = async (
@@ -198,6 +239,13 @@ function HomePage() {
       setClockedInId(id);
       getSingleTask(id);
     }
+  };
+
+  const handleSignOut = async (e: React.SyntheticEvent) => {
+    e.preventDefault;
+    localStorage.removeItem("token");
+
+    navigate("/");
   };
 
   // Runs only on first render (Doesn't do so in dev due to React.strictmode)
@@ -246,7 +294,7 @@ function HomePage() {
                 {task.status}
               </Row>
               <Row className="square border-bottom">
-                <b>Time Spent on Task:</b>
+                <b>Total Time Spent on Task:</b>
                 {task.timeSpent}
               </Row>
               <Row style={{ paddingTop: 5 }}>
@@ -265,15 +313,60 @@ function HomePage() {
                 <Button
                   type="button"
                   className="btn-space"
+                  variant="info"
                   style={{ width: 100, marginLeft: 188 }}
+                  onClick={() => setOpenUpdate(!openUpdate)}
                 >
-                  Update
+                  Edit Task
                 </Button>
+                <div style={{ width: 500 }}>
+                  <Collapse
+                    in={openUpdate}
+                    className="rounded-lg border-top border-bottom border-info"
+                  >
+                    <Form
+                      style={{ backgroundColor: "#E5E7E9" }}
+                      onSubmit={async (e) => {
+                        await handleUpdate(e, task.id);
+                      }}
+                    >
+                      <Form.Group className="mb-3" controlId="formGroupTitle">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                          style={{ backgroundColor: "#F2F3F4" }}
+                          placeholder="Enter Title"
+                          defaultValue={task.title}
+                        />
+                      </Form.Group>
+                      <Form.Group
+                        className="mb-3"
+                        controlId="formGroupCompletedTask"
+                      >
+                        <Form.Check
+                          type="checkbox"
+                          label="Task Finished"
+                          style={{ marginRight: 350, fontSize: 13 }}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="formGroupTime">
+                        <Form.Label>Total Time Spent on Task</Form.Label>
+                        <Form.Control
+                          style={{ backgroundColor: "#F2F3F4" }}
+                          placeholder="Enter Title"
+                          defaultValue={task.timeSpent}
+                        />
+                      </Form.Group>
+                      <Button variant="info" type="submit">
+                        Update
+                      </Button>
+                    </Form>
+                  </Collapse>
+                </div>
                 <Button
                   type="button"
                   className="btn-space"
                   variant="danger"
-                  style={{ width: 100, marginLeft: 188 }}
+                  style={{ width: 100, marginLeft: 188, marginTop: 5 }}
                   onClick={async (e) => {
                     await handleDelete(e, task.id);
                   }}
@@ -299,10 +392,13 @@ function HomePage() {
           in={openCreate}
           className="rounded-lg border-top border-bottom border-success"
         >
-          <Form onSubmit={handleCreate}>
+          <Form onSubmit={handleCreate} style={{ backgroundColor: "#2C3E50" }}>
             <Form.Group className="mb-3" controlId="formGroupTitle">
               <Form.Label>Title</Form.Label>
-              <Form.Control placeholder="Enter Title" />
+              <Form.Control
+                style={{ backgroundColor: "#85929E" }}
+                placeholder="Enter Title"
+              />
             </Form.Group>
             <Button variant="success" type="submit">
               Create
@@ -310,6 +406,11 @@ function HomePage() {
           </Form>
         </Collapse>
       </div>
+      <Form onSubmit={handleSignOut}>
+        <Button variant="light" style={{ marginLeft: 400 }} type="submit">
+          Sign Out
+        </Button>
+      </Form>
     </>
   );
 }
