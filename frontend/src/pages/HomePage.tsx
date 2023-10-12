@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionHeader,
@@ -39,8 +39,6 @@ function HomePage() {
 
   // Handles searcing for tasks
   const getTasks = async () => {
-    // console.log(localStorage.getItem("token"));
-    // console.log(title);
     const { data } = await axios.post(
       "http://[::1]:3000/task/search",
       { title: title },
@@ -253,9 +251,15 @@ function HomePage() {
     getTasks().catch(console.error);
   }, []);
 
+  useEffect(() => {
+    // Redirects user to sign in page if not logged in
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, []);
+
   return (
     <>
-      {/* <header className="position-absolute align-items top-0 start-5"> */}
       <header className="Home-header">
         <Form>
           <h1>Home Page</h1>
