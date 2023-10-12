@@ -146,6 +146,7 @@ function HomePage() {
       const newTask: Task = data;
       const newTasks: Task[] = [...tasks];
       newTasks.push(newTask);
+      setOpenCreate(false);
       setTasks(newTasks);
     }
   };
@@ -194,6 +195,7 @@ function HomePage() {
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
     } else {
+      setOpenUpdate(false);
       getSingleTask(id);
     }
   };
@@ -349,6 +351,7 @@ function HomePage() {
                         <Form.Check
                           type="checkbox"
                           label="Task Finished"
+                          defaultChecked={task.status == "DONE" ? true : false}
                           style={{ marginRight: 350, fontSize: 13 }}
                         />
                       </Form.Group>
