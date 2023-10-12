@@ -12,7 +12,9 @@ export class UserService {
 
     constructor(private jwtService: JwtService, @InjectModel(User.name) private userModel: Model<User>) {}
 
-    async signUp(userID: number, email: string, password: string) {
+    async signUp( email: string, password: string) {
+        // UserID is randomly generated
+        const userID = await this.generateID();
         // User is created in the data base
         const user = await this.userModel.create({userID, email, password});
 
@@ -61,5 +63,14 @@ export class UserService {
         const temp = atob(token.split('.')[1]);
         const id = temp.split(',')[0].slice(-1);
         return id;
+    }
+
+    async generateID() {
+        var randId = Math.floor(Math.random() * 9999);
+        while(await this.userModel.exists({id: randId})){
+            randId = Math.floor(Math.random() * 9999);
+        }
+
+        return randId;
     }
 }

@@ -11,7 +11,7 @@ export class UserController {
     @Post('/signup')
     async signUp(@Body() body: CreateUserDto) {
         try{
-            const user = await this.userService.signUp(body.userID, body.email, body.password);
+            const user = await this.userService.signUp(body.email, body.password);
         return user;
         }catch(error){
             return new BadRequestException(error.message);
