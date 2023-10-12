@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionHeader,
@@ -30,8 +30,8 @@ function HomePage() {
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [clockedIn, setClockedIn] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
-  const [timeStart, setTimeStart] = useState<number>(0);
-  var interval: NodeJS.Timeout;
+  const [intervalId, setIntervalId] =
+    useState<ReturnType<typeof setInterval>>();
 
   // Handles searcing for tasks
   const getTasks = async () => {
@@ -95,11 +95,9 @@ function HomePage() {
   const handleCreate = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const target = e.target as typeof e.target & {
-      formGroupId: { value: string };
       formGroupTitle: { value: string };
     };
     const form = {
-      id: parseInt(target.formGroupId.value),
       title: target.formGroupTitle.value,
     };
 
@@ -116,7 +114,7 @@ function HomePage() {
     } else {
       console.log(data);
       // Refresh the page after adding in new task
-      window.location.reload();
+      getTasks();
     }
   };
 
@@ -134,9 +132,12 @@ function HomePage() {
       console.error(data.response);
     } else {
       // Refresh the page after deleting a task
-      window.location.reload();
+      getTasks();
     }
   };
+
+  // Handle Update
+  const handleUpdate = async (e: React.SyntheticEvent, id: string) => {};
 
   // Handles clocking in and out
   const handleClockIn = async (
@@ -163,16 +164,16 @@ function HomePage() {
       if (clockedIn) {
         // About to clock  out
         setTimer(0);
-        setTimeStart(0);
-        clearInterval(interval);
-        window.location.reload();
+        clearInterval(intervalId);
+        getTasks();
       } else {
-        // About to clock in
-        setTimeStart(Date.now());
+        // About to clock i
         console.log("Clocking in!");
-        interval = setInterval(() => {
-          setTimer((timer) => timer + 1000);
-        }, 1000);
+        setIntervalId(
+          setInterval(() => {
+            setTimer((timer) => timer + 1000);
+          }, 1000)
+        );
       }
       setClockedIn(!clockedIn);
     }
@@ -215,7 +216,7 @@ function HomePage() {
         {tasks.map((task) => (
           <Accordion.Item eventKey={task.id}>
             <AccordionHeader>
-              <b>{task.id}</b> : {task.title}
+              <b>{task.title}</b>
             </AccordionHeader>
             <AccordionBody>
               <Row className="square border-bottom">
@@ -276,10 +277,6 @@ function HomePage() {
           className="rounded-lg border-top border-bottom border-success"
         >
           <Form onSubmit={handleCreate}>
-            <Form.Group className="mb-3" controlId="formGroupId">
-              <Form.Label>Task ID</Form.Label>
-              <Form.Control placeholder="Enter Unique ID" />
-            </Form.Group>
             <Form.Group className="mb-3" controlId="formGroupTitle">
               <Form.Label>Title</Form.Label>
               <Form.Control placeholder="Enter Title" />
