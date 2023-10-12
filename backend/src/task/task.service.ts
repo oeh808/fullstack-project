@@ -14,7 +14,8 @@ export class TaskService {
 
     async create(dto: CreateTaskDto, header: string) {
         const userId = this.extractId(header);
-        const task = await this.taskModel.create({...dto, userID: userId})
+        const taskId = await this.generateID();
+        const task = await this.taskModel.create({id: taskId, title: dto.title, userID: userId})
 
         return task;
     }
@@ -137,5 +138,15 @@ export class TaskService {
             seconds: this.padTo2Digits(seconds)
         }
         //return `${this.padTo2Digits(hours)}:${this.padTo2Digits(minutes)}:${this.padTo2Digits(seconds,)}`;
+    }
+
+    // Function to randomly generate a unique id
+    async generateID() {
+        var randId = Math.floor(Math.random() * 9999);
+        while(await this.taskModel.exists({id: randId})){
+            randId = Math.floor(Math.random() * 9999);
+        }
+
+        return randId;
     }
 }

@@ -2,9 +2,6 @@ import { IsEmail, IsString, IsOptional, IsNumber, IsEnum, isNumber, IsDate } fro
 import { TaskStatus } from "src/constants/enums";
 
 export class CreateTaskDto {
-    @IsNumber()
-    id: number
-
     @IsString()
     title : string;
 }
