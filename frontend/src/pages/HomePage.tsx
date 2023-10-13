@@ -5,6 +5,7 @@ import {
   AccordionHeader,
   Alert,
   Button,
+  ButtonGroup,
   Col,
   Collapse,
   Form,
@@ -40,7 +41,7 @@ function HomePage() {
   const [intervalId, setIntervalId] =
     useState<ReturnType<typeof setInterval>>();
 
-  // Handles searcing for tasks
+  // Handles searching for tasks
   const getTasks = async () => {
     const { data } = await axios.post(
       "http://[::1]:3000/task/search",
@@ -289,7 +290,12 @@ function HomePage() {
   return (
     <>
       <header className="Home-header">
-        <Form>
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            getTasks();
+          }}
+        >
           <h1>Home Page</h1>
           <Row>
             <Col xs={20}>
@@ -299,10 +305,20 @@ function HomePage() {
               />
             </Col>
             <Col>
+              <ButtonGroup aria-label="Basic example">
+                <Button variant="info" style={{ marginRight: 2 }}>
+                  Filter Statuses
+                </Button>
+                <Button variant="info" style={{ marginRight: 2 }}>
+                  Filter Priorities
+                </Button>
+                <Button variant="info" style={{ marginRight: 20 }}>
+                  Filter Due Date
+                </Button>
+              </ButtonGroup>
               <Button
-                type="button"
-                onClick={getTasks}
-                variant="info"
+                type="submit"
+                // onClick={getTasks}
                 style={{ marginRight: 20 }}
               >
                 Search
@@ -314,7 +330,7 @@ function HomePage() {
       <h2>Timer: {presentTime(timer)}</h2>
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
-      <Accordion flush style={{ width: 500 }}>
+      <Accordion flush style={{ width: 500, marginLeft: 100 }}>
         {tasks.map((task) => (
           <Accordion.Item
             eventKey={task.id}
@@ -411,7 +427,7 @@ function HomePage() {
                           <Form.Label>Priority</Form.Label>
                           <Form.Select
                             defaultValue={task.priority}
-                            style={{ backgroundColor: "#85929E" }}
+                            style={{ backgroundColor: "#F2F3F4" }}
                           >
                             <option value="HIGH">High</option>
                             <option value="MEDIUM">Medium</option>
@@ -435,7 +451,7 @@ function HomePage() {
                                 ? "0" + task.dueDate.getDate()
                                 : task.dueDate.getDate())
                             }
-                            style={{ backgroundColor: "#85929E" }}
+                            style={{ backgroundColor: "#F2F3F4" }}
                             placeholder="Enter date task is due"
                             type="date"
                           />
@@ -472,7 +488,7 @@ function HomePage() {
       >
         Create New Task
       </Button>
-      <div style={{ width: 500 }}>
+      <div style={{ width: 500, marginLeft: 100 }}>
         <Collapse
           in={openCreate}
           className="rounded-lg border-top border-bottom border-success"
