@@ -36,7 +36,7 @@ export class TaskController {
     // Search by title
     async getAllTasks(@Body() body: SearchTaskDto, @Headers('authorization') header: string) {
         try {
-            return await this.taskService.find(body.title, header);
+            return await this.taskService.find(body, header);
         }catch(error){
             return new BadRequestException(error.message);
         }

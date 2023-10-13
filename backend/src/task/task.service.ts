@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Task } from './task.schema';
-import { Model } from 'mongoose';
+import { Model, PipelineStage } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.schema';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { EditTaskDto } from './dtos/edit-task.dto';
 import { TaskStatus } from 'src/constants/enums';
+import { SearchTaskDto } from './dtos/search-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -34,14 +35,67 @@ export class TaskService {
         return task;
     }
 
-    async find (title: string, header: string) {
-        const userId = this.extractId(header);
-        if (!title){
-            title = "";
+    async find (dto: SearchTaskDto, header: string) {
+        const userId = parseInt(this.extractId(header));
+        if(!dto.title){
+            dto.title = "";
         }
-        const tasks = await this.taskModel.find({ "title" : { $regex: title, $options: 'i' }, userID: userId }).sort({timeSpent: 'descending'});
+        
+        const stages: PipelineStage[] = [
+            {
+                $match: {
+                    title: { 
+                        $regex: dto.title, $options: 'i' 
+                    },
+                    userID: {
+                        $eq: userId
+                    }
+                }
+            }
+        ]
 
-        return tasks;
+        // If there are statuses in the dto, filter by statuses
+        if(dto.statuses){
+            stages.push(
+                {
+                    $match: { 
+                        status : {
+                            $in: dto.statuses
+                        }
+                    }
+                }
+            )
+        }
+
+        // If there are prioties in the dto, filter by priotrities
+        if(dto.priorities){
+            stages.push(
+                {
+                    $match: {
+                        priority: {
+                            $in: dto.priorities
+                        }
+                    }
+                }
+            )
+        }
+
+        // If there is a set due date in the dto, filter by the due date
+        if(dto.dueDate){
+            stages.push(
+                {
+                    $match: {
+                        dueDate: {
+                            $eq: new Date(dto.dueDate)
+                        }
+                    }
+                }
+            )
+        }
+
+        const res = await this.taskModel.aggregate(stages);
+
+        return res;
     }
 
     async update(id: number, dto: EditTaskDto, header: string) {
