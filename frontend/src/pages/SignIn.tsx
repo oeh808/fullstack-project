@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,13 @@ function SignIn() {
 
     navigate("/signup");
   };
+
+  useEffect(() => {
+    // Redirects user to home page if signed in
+    if (localStorage.getItem("token")) {
+      navigate("/tasks");
+    }
+  }, []);
 
   return (
     <div>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +27,13 @@ function SignUp() {
       navigate("/tasks");
     }
   };
+
+  useEffect(() => {
+    // Redirects user to home page if signed in
+    if (localStorage.getItem("token")) {
+      navigate("/tasks");
+    }
+  }, []);
 
   return (
     <div>
