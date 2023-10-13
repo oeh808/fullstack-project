@@ -85,6 +85,7 @@ function HomePage() {
 
     const singleTask: Task = data;
     singleTask.timeSpent = presentTime(parseInt(singleTask.timeSpent));
+    singleTask.dueDate = new Date(singleTask.dueDate);
     const index = tasks.findIndex((element) => element.id == singleTask.id);
 
     let newTasks: Task[] = [...tasks];
@@ -187,6 +188,8 @@ function HomePage() {
       formGroupTitle: { value: string };
       formGroupCompletedTask: { checked: boolean };
       formGroupTime: { value: string };
+      formGroupPrio: { value: string };
+      formGroupDueDate: { value: string };
     };
 
     if (!validTime(target.formGroupTime.value)) {
@@ -198,6 +201,8 @@ function HomePage() {
       title: target.formGroupTitle.value,
       status: target.formGroupCompletedTask.checked == true ? "DONE" : "OPEN",
       timeSpent: convertTimeToMilliseconds(target.formGroupTime.value),
+      priority: target.formGroupPrio.value,
+      dueDate: target.formGroupDueDate.value,
     };
 
     const { data } = await axios.patch(`http://[::1]:3000/task/${id}`, form, {
@@ -402,6 +407,39 @@ function HomePage() {
                           placeholder="Enter Title"
                           defaultValue={task.timeSpent}
                         />
+                        <Form.Group className="mb-3" controlId="formGroupPrio">
+                          <Form.Label>Priority</Form.Label>
+                          <Form.Select
+                            defaultValue={task.priority}
+                            style={{ backgroundColor: "#85929E" }}
+                          >
+                            <option value="HIGH">High</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="LOW">Low</option>
+                          </Form.Select>
+                        </Form.Group>
+                        <Form.Group
+                          className="mb-3"
+                          controlId="formGroupDueDate"
+                        >
+                          <Form.Label>Due Date</Form.Label>
+                          <Form.Control
+                            defaultValue={
+                              task.dueDate.getFullYear() +
+                              "-" +
+                              (task.dueDate.getMonth() + 1 < 10
+                                ? "0" + (task.dueDate.getMonth() + 1)
+                                : task.dueDate.getMonth() + 1) +
+                              "-" +
+                              (task.dueDate.getDate() < 10
+                                ? "0" + task.dueDate.getDate()
+                                : task.dueDate.getDate())
+                            }
+                            style={{ backgroundColor: "#85929E" }}
+                            placeholder="Enter date task is due"
+                            type="date"
+                          />
+                        </Form.Group>
                       </Form.Group>
                       <Button variant="info" type="submit">
                         Update
