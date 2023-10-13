@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsEnum } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
-import { TaskStatus } from '../constants/enums';
+import { TaskPriority, TaskStatus } from '../constants/enums';
 
 @Schema()
 export class Task {
@@ -19,6 +18,12 @@ export class Task {
 
     @Prop({ required: [true, "Task must have associated User"], trim: true })
     userID : number;
+
+    @Prop({type: String, enum: TaskPriority, default: TaskPriority.MEDIUM})
+    priority: TaskPriority;
+
+    @Prop({trim: true})
+    dueDate: Date;
 }
 
 export type taskDocument = HydratedDocument<Task>;

@@ -10,12 +10,13 @@ import { TaskStatus } from 'src/constants/enums';
 
 @Injectable()
 export class TaskService {
-    constructor(private jwtService: JwtService, @InjectModel(Task.name) private taskModel: Model<Task>, @InjectModel(User.name) private userModel: Model<User>) {}
+    constructor(@InjectModel(Task.name) private taskModel: Model<Task>, @InjectModel(User.name) private userModel: Model<User>) {}
 
     async create(dto: CreateTaskDto, header: string) {
         const userId = this.extractId(header);
         const taskId = await this.generateID();
-        const task = await this.taskModel.create({id: taskId, title: dto.title, userID: userId})
+
+        const task = await this.taskModel.create({id: taskId, title: dto.title, priority : dto.priority, dueDate: new Date(dto.dueDate), userID: userId})
 
         return task;
     }
@@ -50,6 +51,9 @@ export class TaskService {
         }
 
         Object.assign(task,dto);
+        if(dto.dueDate){
+            task.dueDate = new Date(dto.dueDate);
+        }
 
         await this.taskModel.updateOne({id: id}, task, {new: true});
 

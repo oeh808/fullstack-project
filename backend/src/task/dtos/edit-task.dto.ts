@@ -1,5 +1,5 @@
 import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { TaskStatus } from "src/constants/enums";
+import { TaskPriority, TaskStatus } from "../../constants/enums";
 
 
 export class EditTaskDto {
@@ -15,7 +15,11 @@ export class EditTaskDto {
     @IsOptional()
     timeSpent: number;
 
-    @IsNumber()
+    @IsEnum(TaskPriority)
     @IsOptional()
-    userID: number;
+    priority: TaskPriority
+
+    @IsString()
+    @IsOptional()
+    dueDate: string;
 }
