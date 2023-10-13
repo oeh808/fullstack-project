@@ -133,12 +133,14 @@ function HomePage() {
     e.preventDefault();
     const target = e.target as typeof e.target & {
       formGroupTitle: { value: string };
+      formGroupPrio: { value: string };
+      formGroupDueDate: { value: string };
     };
     const form = {
       title: target.formGroupTitle.value,
+      priority: target.formGroupPrio.value,
+      dueDate: target.formGroupDueDate.value,
     };
-
-    console.log(form);
 
     const { data } = await axios.post("http://[::1]:3000/task", form, {
       headers: {
@@ -148,6 +150,7 @@ function HomePage() {
 
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
+      setErrorMessage("Task must have a title.");
     } else {
       console.log(data);
       const newTask: Task = data;
@@ -442,6 +445,23 @@ function HomePage() {
               <Form.Control
                 style={{ backgroundColor: "#85929E" }}
                 placeholder="Enter Title"
+              />
+              {errorMessage && <Alert variant="danger"> {errorMessage} </Alert>}
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupPrio">
+              <Form.Label>Priority</Form.Label>
+              <Form.Select style={{ backgroundColor: "#85929E" }}>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupDueDate">
+              <Form.Label>Due Date</Form.Label>
+              <Form.Control
+                style={{ backgroundColor: "#85929E" }}
+                placeholder="Enter date task is due"
+                type="date"
               />
             </Form.Group>
             <Button variant="success" type="submit">
