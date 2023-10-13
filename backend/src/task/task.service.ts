@@ -79,7 +79,7 @@ export class TaskService {
 
         switch(task.status) {
             case TaskStatus.IN_PROGRESS:
-                throw new BadRequestException("You have already clocked in for this task");
+                throw new BadRequestException("You are already clocked in to this task.");
             case TaskStatus.DONE:
                 throw new BadRequestException("You have already finished this task.")
             default: // Status must be open, therefore the task is not clocked in
@@ -101,7 +101,7 @@ export class TaskService {
 
         switch(task.status) {
             case TaskStatus.OPEN:
-                throw new BadRequestException("You have not clocked in for this task");
+                throw new BadRequestException("You can only clock in to one task at a time.");
             case TaskStatus.DONE:
                 throw new BadRequestException("You have already finished this task.")
             default: // Status must be in progress, therefore the task is clocked in

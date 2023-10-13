@@ -27,6 +27,7 @@ interface Task {
 */
 function HomePage() {
   let navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState<string>("");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
@@ -178,7 +179,10 @@ function HomePage() {
       formGroupTime: { value: string };
     };
 
-    console.log(target.formGroupCompletedTask.checked);
+    if (!validTime(target.formGroupTime.value)) {
+      setErrorMessage("Time needs to be of the format HH:MM:SS");
+      return;
+    }
 
     const form = {
       title: target.formGroupTitle.value,
@@ -198,6 +202,12 @@ function HomePage() {
       setOpenUpdate(false);
       getSingleTask(id);
     }
+  };
+
+  // Checks if a given string is a valid HH:MM:SS
+  const validTime = (time: string) => {
+    const pattern = /^(?:[0-9][0-9]):[0-5][0-9]:[0-5][0-9]$/;
+    return time.match(pattern);
   };
 
   // Handles clocking in and out
@@ -221,6 +231,7 @@ function HomePage() {
 
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
+      setErrorMessage(data.response.message);
     } else {
       if (clockedIn) {
         // About to clock  out
@@ -290,7 +301,10 @@ function HomePage() {
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
       <Accordion flush style={{ width: 500 }}>
         {tasks.map((task) => (
-          <Accordion.Item eventKey={task.id}>
+          <Accordion.Item
+            eventKey={task.id}
+            onClick={() => setErrorMessage("")}
+          >
             <AccordionHeader>
               <b>{task.title}</b>
             </AccordionHeader>
@@ -316,6 +330,9 @@ function HomePage() {
                     ? "Clock Out"
                     : "Clock In"}
                 </Button>
+                {errorMessage && (
+                  <Alert variant="danger"> {errorMessage} </Alert>
+                )}
                 <Button
                   type="button"
                   className="btn-space"
