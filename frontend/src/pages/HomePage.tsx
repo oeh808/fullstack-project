@@ -31,21 +31,75 @@ interface Task {
 function HomePage() {
   let navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [title, setTitle] = useState<string>("");
+
+  const [titleFilter, setTitleFilter] = useState<string>("");
+  const [statusesFilter, setStatusesFilter] = useState<string[]>([
+    "OPEN",
+    "IN_PROGRESS",
+    "DONE",
+  ]);
+  const [prioritiesFilter, setPrioritiesFilter] = useState<string[]>([
+    "HIGH",
+    "MEDIUM",
+    "LOW",
+  ]);
+  const [dueDateFilter, setDueDatesFilter] = useState<Date>();
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [openUpdate, setOpenUpdate] = useState<boolean>(false);
+
+  const [openStatusFilter, setOpenStatusFilter] = useState<boolean>(false);
+  const [openPrioritiesFilter, setOpenPrioritesFilter] =
+    useState<boolean>(false);
+  const [openDueDateFilter, setOpenDueDateFilter] = useState<boolean>(false);
+
   const [clockedIn, setClockedIn] = useState<boolean>(false);
   const [clockedInId, setClockedInId] = useState<string>("-1");
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] =
     useState<ReturnType<typeof setInterval>>();
 
+  const updateOpenStatusFilter = (status: string) => {
+    const index = statusesFilter.findIndex((element) => element == status);
+    const newStatusFilter = statusesFilter;
+
+    if (index == -1) {
+      // Status is not in the filter array and should be added
+      newStatusFilter.push(status);
+    } else {
+      // Status exists in the filter array and should be removed
+      newStatusFilter.splice(index, 1);
+    }
+
+    setStatusesFilter(newStatusFilter);
+  };
+
+  const updateOpenPrioritesFilter = (status: string) => {
+    const index = prioritiesFilter.findIndex((element) => element == status);
+    const newPrioritiesFilter = prioritiesFilter;
+
+    if (index == -1) {
+      // Status is not in the filter array and should be added
+      newPrioritiesFilter.push(status);
+    } else {
+      // Status exists in the filter array and should be removed
+      newPrioritiesFilter.splice(index, 1);
+    }
+
+    setPrioritiesFilter(newPrioritiesFilter);
+  };
+
   // Handles searching for tasks
   const getTasks = async () => {
     const { data } = await axios.post(
       "http://[::1]:3000/task/search",
-      { title: title },
+      {
+        title: titleFilter,
+        statuses: statusesFilter,
+        priorities: prioritiesFilter,
+        dueDate: dueDateFilter,
+      },
       {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -206,6 +260,11 @@ function HomePage() {
       dueDate: target.formGroupDueDate.value,
     };
 
+    if (!form.title) {
+      setErrorMessage("Task must have a title.");
+      return;
+    }
+
     const { data } = await axios.patch(`http://[::1]:3000/task/${id}`, form, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -301,17 +360,107 @@ function HomePage() {
             <Col xs={20}>
               <Form.Control
                 placeholder="Search by Title..."
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => setTitleFilter(e.target.value)}
               />
             </Col>
             <Col>
               <ButtonGroup aria-label="Basic example">
-                <Button variant="info" style={{ marginRight: 2 }}>
+                <Button
+                  variant="info"
+                  style={{ marginRight: 2 }}
+                  onClick={() => setOpenStatusFilter(!openStatusFilter)}
+                >
                   Filter Statuses
                 </Button>
-                <Button variant="info" style={{ marginRight: 2 }}>
+                <Collapse
+                  in={openStatusFilter}
+                  className="rounded-lg border-top border-bottom border-info"
+                >
+                  <Form>
+                    <Form.Check
+                      type="checkbox"
+                      label="OPEN"
+                      defaultChecked={
+                        statusesFilter.find((element) => element == "OPEN")
+                          ? true
+                          : false
+                      }
+                      onChange={() => updateOpenStatusFilter("OPEN")}
+                      style={{ marginRight: 5, fontSize: 13 }}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="IN_PROGRESS"
+                      defaultChecked={
+                        statusesFilter.find(
+                          (element) => element == "IN_PROGRESS"
+                        )
+                          ? true
+                          : false
+                      }
+                      onChange={() => updateOpenStatusFilter("IN_PROGRESS")}
+                      style={{ marginRight: 5, fontSize: 13 }}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="DONE"
+                      defaultChecked={
+                        statusesFilter.find((element) => element == "DONE")
+                          ? true
+                          : false
+                      }
+                      onChange={() => updateOpenStatusFilter("DONE")}
+                      style={{ marginRight: 5, fontSize: 13 }}
+                    />
+                  </Form>
+                </Collapse>
+                <Button
+                  variant="info"
+                  style={{ marginRight: 2 }}
+                  onClick={() => setOpenPrioritesFilter(!openPrioritiesFilter)}
+                >
                   Filter Priorities
                 </Button>
+                <Collapse
+                  in={openPrioritiesFilter}
+                  className="rounded-lg border-top border-bottom border-info"
+                >
+                  <Form>
+                    <Form.Check
+                      type="checkbox"
+                      label="HIGH"
+                      defaultChecked={
+                        prioritiesFilter.find((element) => element == "HIGH")
+                          ? true
+                          : false
+                      }
+                      onChange={() => updateOpenPrioritesFilter("HIGH")}
+                      style={{ marginRight: 5, fontSize: 13 }}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="MEDIUM"
+                      defaultChecked={
+                        prioritiesFilter.find((element) => element == "MEDIUM")
+                          ? true
+                          : false
+                      }
+                      onChange={() => updateOpenPrioritesFilter("MEDIUM")}
+                      style={{ marginRight: 5, fontSize: 13 }}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="LOW"
+                      defaultChecked={
+                        prioritiesFilter.find((element) => element == "LOW")
+                          ? true
+                          : false
+                      }
+                      onChange={() => updateOpenPrioritesFilter("LOW")}
+                      style={{ marginRight: 5, fontSize: 13 }}
+                    />
+                  </Form>
+                </Collapse>
                 <Button variant="info" style={{ marginRight: 20 }}>
                   Filter Due Date
                 </Button>
