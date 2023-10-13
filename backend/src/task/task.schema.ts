@@ -22,7 +22,7 @@ export class Task {
     @Prop({type: String, enum: TaskPriority, default: TaskPriority.MEDIUM})
     priority: TaskPriority;
 
-    @Prop({trim: true})
+    @Prop({trim: true, default: new Date()})
     dueDate: Date;
 }
 

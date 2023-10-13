@@ -18,6 +18,8 @@ interface Task {
   title: string;
   status: string;
   timeSpent: string;
+  priority: string;
+  dueDate: Date;
 }
 
 /* Components to be added:
@@ -59,12 +61,16 @@ function HomePage() {
         title: string;
         status: string;
         timeSpent: number;
+        priority: string;
+        dueDate: Date;
       }) =>
         newTasks.push({
           id: task.id,
           title: task.title,
           status: task.status,
           timeSpent: presentTime(task.timeSpent),
+          priority: task.priority,
+          dueDate: new Date(task.dueDate),
         })
     );
     setTasks(newTasks);
@@ -145,6 +151,7 @@ function HomePage() {
     } else {
       console.log(data);
       const newTask: Task = data;
+      newTask.dueDate = new Date(newTask.dueDate);
       const newTasks: Task[] = [...tasks];
       newTasks.push(newTask);
       setOpenCreate(false);
@@ -316,6 +323,19 @@ function HomePage() {
               <Row className="square border-bottom">
                 <b>Total Time Spent on Task:</b>
                 {task.timeSpent}
+              </Row>
+              <Row className="square border-bottom">
+                <b>Priority:</b>
+                {task.priority}
+              </Row>
+              <Row className="square border-bottom">
+                <b>Due Date:</b>
+                {task.dueDate.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </Row>
               <Row style={{ paddingTop: 5 }}>
                 <Button
