@@ -17,7 +17,10 @@ function SignUp() {
       password: target.password.value,
     };
 
-    const { data } = await axios.post("http://[::1]:3000/signup", form);
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_REACT_APP_URL}/signup`,
+      form
+    );
     if (data.status === 400) {
       setErrorMessage(data.response.message);
     } else {

@@ -18,7 +18,10 @@ function SignIn() {
       password: target.password.value,
     };
 
-    const { data } = await axios.post("http://[::1]:3000/signin", form);
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_REACT_APP_URL}/signin`,
+      form
+    );
     if (data.status === 404) {
       setErrorMessage(data.response.message);
     } else {

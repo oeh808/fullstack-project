@@ -93,7 +93,7 @@ function HomePage() {
   // Handles searching for tasks
   const getTasks = async () => {
     const { data } = await axios.post(
-      "http://[::1]:3000/task/search",
+      `${import.meta.env.VITE_REACT_APP_URL}/task/search`,
       {
         title: titleFilter,
         statuses: statusesFilter,
@@ -132,11 +132,14 @@ function HomePage() {
   };
 
   const getSingleTask = async (id: string) => {
-    const { data } = await axios.get(`http://[::1]:3000/task/${id}`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_REACT_APP_URL}/task/${id}`,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
 
     const singleTask: Task = data;
     singleTask.timeSpent = presentTime(parseInt(singleTask.timeSpent));
@@ -198,11 +201,15 @@ function HomePage() {
       dueDate: target.formGroupDueDate.value,
     };
 
-    const { data } = await axios.post("http://[::1]:3000/task", form, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_REACT_APP_URL}/task`,
+      form,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
 
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
@@ -222,11 +229,14 @@ function HomePage() {
   const handleDelete = async (e: React.SyntheticEvent, id: string) => {
     e.preventDefault();
 
-    const { data } = await axios.delete(`http://[::1]:3000/task/${id}`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const { data } = await axios.delete(
+      `${import.meta.env.VITE_REACT_APP_URL}/task/${id}`,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
 
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
@@ -265,11 +275,15 @@ function HomePage() {
       return;
     }
 
-    const { data } = await axios.patch(`http://[::1]:3000/task/${id}`, form, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const { data } = await axios.patch(
+      `${import.meta.env.VITE_REACT_APP_URL}/task/${id}`,
+      form,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }
+    );
 
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
@@ -292,10 +306,16 @@ function HomePage() {
     time: string
   ) => {
     e.preventDefault();
-    console.log(`http://[::1]:3000/task/${clockedIn ? "clockOut" : "clockin"}`);
+    console.log(
+      `${import.meta.env.VITE_REACT_APP_URL}/task/${
+        clockedIn ? "clockOut" : "clockin"
+      }`
+    );
 
     const { data } = await axios.patch(
-      `http://[::1]:3000/task/${clockedIn ? "clockOut" : "clockIn"}/${id}`,
+      `${import.meta.env.VITE_REACT_APP_URL}/task/${
+        clockedIn ? "clockOut" : "clockIn"
+      }/${id}`,
       { time: time },
       {
         headers: {
