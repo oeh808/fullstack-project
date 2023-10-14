@@ -23,12 +23,9 @@ interface Task {
   dueDate: Date;
 }
 
-/* Components to be added:
-  - A search bar
-  - A timer
-  - A table of tasks
-*/
 function HomePage() {
+  // Initializing constants and variables:
+  // _______________________________________________________________________________________________________________________________
   let navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -60,6 +57,11 @@ function HomePage() {
   const [intervalId, setIntervalId] =
     useState<ReturnType<typeof setInterval>>();
 
+  // _______________________________________________________________________________________________________________________________
+
+  // Functions for onClicks, onSubmits and updating states:
+  // _______________________________________________________________________________________________________________________________
+  // Updates the parameters for filtering by statuses
   const updateOpenStatusFilter = (status: string) => {
     const index = statusesFilter.findIndex((element) => element == status);
     const newStatusFilter = statusesFilter;
@@ -75,6 +77,7 @@ function HomePage() {
     setStatusesFilter(newStatusFilter);
   };
 
+  // Updates the parameters for filtering by priorities
   const updateOpenPrioritesFilter = (status: string) => {
     const index = prioritiesFilter.findIndex((element) => element == status);
     const newPrioritiesFilter = prioritiesFilter;
@@ -130,6 +133,7 @@ function HomePage() {
     setTasks(newTasks);
   };
 
+  // Handles retrieving a single task by its id
   const getSingleTask = async (id: string) => {
     const { data } = await axios.get(
       `${import.meta.env.VITE_REACT_APP_URL}/task/${id}`,
@@ -239,6 +243,7 @@ function HomePage() {
     if (data.status === 404 || data.status === 400) {
       console.error(data.response);
     } else {
+      // Get tasks is called to update the table of tasks
       getTasks();
     }
   };
@@ -287,6 +292,7 @@ function HomePage() {
       console.error(data.response);
     } else {
       setOpenUpdate(false);
+      // Function call to visually update the task that was altered
       getSingleTask(id);
     }
   };
@@ -334,7 +340,9 @@ function HomePage() {
         );
       }
       setClockedIn(!clockedIn);
+      // Only one task can be clockedin at a time
       setClockedInId(id);
+      // Function call to visually update the task that was altered
       getSingleTask(id);
     }
   };
@@ -346,11 +354,14 @@ function HomePage() {
     navigate("/");
   };
 
-  // Runs only on first render (Doesn't do so in dev due to React.strictmode)
+  // _______________________________________________________________________________________________________________________________
+
+  // Retrieves the tasks for the table on first render
   useMemo(() => {
     getTasks().catch(console.error);
   }, []);
 
+  // Repeated on each render to check if the user is signed in
   useEffect(() => {
     // Redirects user to sign in page if not logged in
     if (!localStorage.getItem("token")) {
@@ -364,6 +375,7 @@ function HomePage() {
         <h1>Home Page</h1>
         <Row>
           <Col xs={20}>
+            {/* Title Filter constantly updates on change but will not search unless search button is clicked */}
             <Form.Control
               placeholder="Search by Title..."
               onChange={(e) => setTitleFilter(e.target.value)}
@@ -493,12 +505,14 @@ function HomePage() {
         </Row>
       </header>
       <h2>Timer: {presentTime(timer)}</h2>
+      {/* __________________________________________________________________________________________________________________________ */}
       {/* Displays an Alert if the current user has no tasks */}
       {tasks.length === 0 && <Alert variant="warning">You have no tasks</Alert>}
       <Accordion flush style={{ width: 500, marginLeft: 100 }}>
         {tasks.map((task) => (
           <Accordion.Item
             eventKey={task.id}
+            // Error message is cleared if the user clicks anywhere on the tasks
             onClick={() => setErrorMessage("")}
           >
             <AccordionHeader>
@@ -605,6 +619,7 @@ function HomePage() {
                         >
                           <Form.Label>Due Date</Form.Label>
                           <Form.Control
+                            // Formatting date to be accepted by Forms of the date type
                             defaultValue={
                               task.dueDate.getFullYear() +
                               "-" +
@@ -644,6 +659,8 @@ function HomePage() {
           </Accordion.Item>
         ))}
       </Accordion>
+
+      {/* __________________________________________________________________________________________________________________________ */}
       <Button
         type="button"
         className="btn-space"
@@ -699,24 +716,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-{
-  /* <ListGroup>
-        {tasks.map((task, index) => (
-          <ListGroup.Item
-            className={
-              selectedIndex === index
-                ? "list-group-item active"
-                : "list-group-item"
-            }
-            key={task[0]}
-            onClick={() => {
-              setSelectedIndex(index);
-              // Implement a way to open up the task in an overlay
-            }}
-          >
-            {task[1]}
-          </ListGroup.Item>
-        ))}
-      </ListGroup> */
-}
