@@ -29,7 +29,7 @@ export class TaskService {
         const task = await this.taskModel.findOne({id: id, userID: userId});
 
         if(!task){
-            throw new UnauthorizedException("You do not have a task with this id.");
+            return new UnauthorizedException("You do not have a task with this id.");
         }
 
         return task;
@@ -103,7 +103,7 @@ export class TaskService {
         const task = await this.taskModel.findOne({id: id, userID: userId});
 
         if(!task){
-            throw new UnauthorizedException("You do not have a task with this id.");
+            return new UnauthorizedException("You do not have a task with this id.");
         }
 
         Object.assign(task,dto);
@@ -121,7 +121,7 @@ export class TaskService {
         const task = await this.taskModel.findOne({id: id, userID: userId});
 
         if(!task){
-            throw new UnauthorizedException("You do not have a task with this id.");
+            return new UnauthorizedException("You do not have a task with this id.");
         }
 
         await this.taskModel.deleteOne({id: id});
@@ -134,14 +134,14 @@ export class TaskService {
         const task = await this.taskModel.findOne({id: id, userID: userId});
 
         if(!task){
-            throw new UnauthorizedException("You do not have a task with this id.");
+            return new UnauthorizedException("You do not have a task with this id.");
         }
 
         switch(task.status) {
             case TaskStatus.IN_PROGRESS:
-                throw new BadRequestException("You are already clocked in to this task.");
+                return new BadRequestException("You are already clocked in to this task.");
             case TaskStatus.DONE:
-                throw new BadRequestException("You have already finished this task.")
+                return new BadRequestException("You have already finished this task.")
             default: // Status must be open, therefore the task is not clocked in
                 // Continue as normal
         }
@@ -156,14 +156,14 @@ export class TaskService {
         const userId = this.extractId(header);
         const task = await this.taskModel.findOne({id: id, userID: userId});
         if(!task){
-            throw new UnauthorizedException("You do not have a task with this id.");
+            return new UnauthorizedException("You do not have a task with this id.");
         }
 
         switch(task.status) {
             case TaskStatus.OPEN:
-                throw new BadRequestException("You can only clock in to one task at a time.");
+                return new BadRequestException("You can only clock in to one task at a time.");
             case TaskStatus.DONE:
-                throw new BadRequestException("You have already finished this task.")
+                return new BadRequestException("You have already finished this task.")
             default: // Status must be in progress, therefore the task is clocked in
                 // Continue as normal
         }
