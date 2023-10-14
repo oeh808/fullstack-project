@@ -106,7 +106,6 @@ function HomePage() {
         },
       }
     );
-    // console.log(data);
 
     let newTasks: Task[] = [];
 
@@ -215,7 +214,6 @@ function HomePage() {
       console.error(data.response);
       setErrorMessage("Task must have a title.");
     } else {
-      console.log(data);
       const newTask: Task = data;
       newTask.dueDate = new Date(newTask.dueDate);
       const newTasks: Task[] = [...tasks];
@@ -306,11 +304,6 @@ function HomePage() {
     time: string
   ) => {
     e.preventDefault();
-    console.log(
-      `${import.meta.env.VITE_REACT_APP_URL}/task/${
-        clockedIn ? "clockOut" : "clockin"
-      }`
-    );
 
     const { data } = await axios.patch(
       `${import.meta.env.VITE_REACT_APP_URL}/task/${
@@ -334,7 +327,6 @@ function HomePage() {
         clearInterval(intervalId);
       } else {
         // About to clock in
-        console.log("Clocking in!");
         setIntervalId(
           setInterval(() => {
             setTimer((timer) => timer + 1000);

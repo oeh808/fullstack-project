@@ -27,7 +27,6 @@ function SignIn() {
     } else {
       setErrorMessage("");
       localStorage.setItem("token", data);
-      console.log(localStorage.getItem("token"));
       navigate("/tasks");
     }
   };
